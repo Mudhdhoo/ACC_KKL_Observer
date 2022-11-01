@@ -1,5 +1,4 @@
 import sys
-import os
 import torch
 import Systems
 import numpy as np
@@ -7,7 +6,7 @@ import scipy.io as spio
 import Observer
 from Observer import System_z, Observer
 from Dataset import DataSet
-from data_generation import sample_circular
+from data_generation import sample_circular, listdir_filter
 
 instructions = """To run the script, create a path and download the repository contents. Place the trained models
 in a seperate directory. Run python metric_experiment.py arg1 arg2 arg3
@@ -15,18 +14,11 @@ in a seperate directory. Run python metric_experiment.py arg1 arg2 arg3
     arg2 = Location to store the data.
     arg3 = Name of the generated MATLAB file."""
 
-def listdir_filter(path):
-    filtered_listdir = []
-    for f in os.listdir(path):
-        if not f.startswith('.'):
-            filtered_listdir.append(f)
-    return filtered_listdir
-
 def main():
-    path = sys.argv[1]
-    model_names = listdir_filter(path)
+    model_path = sys.argv[1]
+    model_names = listdir_filter(model_path)
     save_dir = sys.argv[2]
-    file_name = sys.argv[3]
+    file_name = sys.argv[3] 
 
     # A and B matricies 
     A = np.array([-6.5549,  4.6082, -5.2057, 3.3942, 6.0211,
@@ -51,7 +43,7 @@ def main():
     # Load trained models
     models = []
     for model in model_names:
-        models.append(torch.load(path+'/'+model))
+        models.append(torch.load(model_path+'/'+model))
 
     # Create observers from models
     observers = []
